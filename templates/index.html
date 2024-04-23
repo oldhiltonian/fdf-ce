@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Data Fetcher</title>
+    <!-- Link to your CSS file -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+
+<body>
+    <header>
+        <h1>Welcome to Financial Data Fetcher</h1>
+        <h3>Compute Engine Edition</h3>
+    </header>
+
+    <div id="search-container">
+        <input type="text" id="company-search" placeholder="Start typing a company name...">
+        <button id="fetch-data">Fetch Data</button>
+        <div id="suggestions-box"></div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/search.js') }}"></script>
+
+    <script type="text/javascript">
+        // Imagine this data is passed from Flask to your template.
+        // In a real app, you'd probably fetch this from the server via an AJAX call.
+        var dropdowns = {{ dropdowns| tojson }};
+
+        document.addEventListener('DOMContentLoaded', function () {
+            var searchInput = document.getElementById('company-search');
+            var suggestionsBox = document.getElementById('suggestions-box');
+
+            searchInput.addEventListener('input', function () {
+                var inputVal = searchInput.value.toLowerCase();
+                var suggestions = dropdowns.filter(function (company) {
+                    return company.toLowerCase().includes(inputVal);
+                }).slice(0, 10); // Get only the first 10 matches
+
+                // Build the suggestions box content
+                suggestionsBox.innerHTML = suggestions.map(function (suggestion) {
+                    return '<div class="suggestion-item">' + suggestion + '</div>';
+                }).join('');
+
+                suggestionsBox.style.display = 'block'; // Show the suggestions box
+            });
+        });
+    </script>
+
+</body>
+
+</html>

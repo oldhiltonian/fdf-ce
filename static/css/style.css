@@ -1,0 +1,58 @@
+/* /static/css/style.css */
+header {
+    text-align: center;
+    padding: 20px;
+}
+
+#search-container {
+    position: relative;
+    width: 600px;
+    /* Increased width */
+    margin: auto;
+}
+
+#company-search {
+    width: 100%;
+    padding: 8px;
+    box-sizing: border-box;
+    /* Include padding in the width */
+}
+
+#fetch-data {
+    display: block;
+    margin-top: 10px;
+    /* Add some space above the button */
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+#fetch-data:hover {
+    background-color: #0056b3;
+}
+
+#suggestions-box {
+    position: absolute;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background: white;
+    display: none;
+    /* Hide initially */
+}
+
+.suggestion-item {
+    padding: 5px 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+
+.suggestion-item:last-child {
+    border-bottom: none;
+}
+
+.suggestion-item:hover {
+    background-color: #f8f8f8;
+}
