@@ -3,7 +3,11 @@ from typing import Dict, Tuple
 
 import pandas as pd
 
-from .fmp_urls import generate_statement_request_url, generate_stock_list_url
+from .fmp_urls import (
+    generate_statement_request_url,
+    generate_statement_string,
+    generate_stock_list_url,
+)
 
 api_key = os.getenv("FMP_API_KEY")
 
@@ -28,7 +32,7 @@ def fetch_available_companies() -> Tuple[list, list, list]:
     df = df[df["type"] == "stock"]
     df.drop(columns=["price", "exchange", "type"], inplace=True)
     df.dropna(inplace=True)
-    df["dropdown"] = df["symbol"] + "  -  " + df["name"]
+    df["dropdown"] = df["symbol"] + "  --  " + df["name"]
     tickers = df["symbol"].tolist()
     names = df["name"].tolist()
     dropdowns = df["dropdown"].tolist()
@@ -57,14 +61,17 @@ def generate_financial_statement_dfs(ticker: str) -> Dict[str, pd.DataFrame]:
     statement types and the values are pandas DataFrames containing the
     corresponding financial statements.
     """
-    statement_data_df = dict()
+    statement_data_dict = dict()
     statement_types = ["is", "bs", "cfs", "metrics"]
     for statement_type in statement_types:
         url = generate_statement_request_url(
             statement_type, ticker, period="annual", limit=10, api_key=api_key
         )
-        statement_data_df[statement_type] = pd.read_json(url).transpose()
-    return statement_data_df
+        statement_key = ticker + "_" + generate_statement_string(statement_type)
+        data_df = pd.read_json(url).transpose()
+        data_df = data_df.iloc[:, ::-1]
+        statement_data_dict[statement_key] = data_df
+    return statement_data_dict
 
 
 def create_string_column(df: pd.DataFrame) -> pd.DataFrame:

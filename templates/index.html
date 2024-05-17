@@ -16,21 +16,25 @@
     </header>
 
     <div id="search-container">
-        <input type="text" id="company-search" placeholder="Start typing a company name...">
-        <button id="fetch-data">Fetch Data</button>
+        <form id="company-form">
+            <input type="text" name="company_name" id="company-search" placeholder="Start typing a company name...">
+            <button type="submit" id="fetch-data">Fetch Data</button>
+        </form>
         <div id="suggestions-box"></div>
     </div>
+
+    <div id="links-container"></div>
 
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
     <script type="text/javascript">
-        // Imagine this data is passed from Flask to your template.
-        // In a real app, you'd probably fetch this from the server via an AJAX call.
         var dropdowns = {{ dropdowns| tojson }};
 
         document.addEventListener('DOMContentLoaded', function () {
             var searchInput = document.getElementById('company-search');
             var suggestionsBox = document.getElementById('suggestions-box');
+            var form = document.getElementById('company-form');
+            var linksContainer = document.getElementById('links-container');
 
             searchInput.addEventListener('input', function () {
                 var inputVal = searchInput.value.toLowerCase();
@@ -44,6 +48,37 @@
                 }).join('');
 
                 suggestionsBox.style.display = 'block'; // Show the suggestions box
+            });
+
+            suggestionsBox.addEventListener('click', function (event) {
+                if (event.target && event.target.matches("div.suggestion-item")) {
+                    searchInput.value = event.target.textContent;
+                    suggestionsBox.style.display = 'none'; // Hide the suggestions box
+                }
+            });
+
+            document.addEventListener('click', function (event) {
+                if (!searchInput.contains(event.target) && !suggestionsBox.contains(event.target)) {
+                    suggestionsBox.style.display = 'none'; // Hide the suggestions box
+                }
+            });
+
+            form.addEventListener('submit', function (event) {
+                event.preventDefault();
+                var formData = new FormData(form);
+                fetch('{{ url_for("fetch_data") }}', {
+                    method: 'POST',
+                    body: formData
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        linksContainer.innerHTML = '<h2>Download Financial Statements:</h2><ul>' +
+                            Object.keys(data.links).map(key =>
+                                `<li><a href="${data.links[key]}" download>${key}</a></li>`
+                            ).join('') +
+                            '</ul>';
+                    })
+                    .catch(error => console.error('Error:', error));
             });
         });
     </script>
