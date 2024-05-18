@@ -46,7 +46,7 @@ def fetch_data():
 
         temp_file = tempfile.NamedTemporaryFile(delete=False, suffix=".xlsx")
         with pd.ExcelWriter(temp_file.name, engine="openpyxl") as writer:
-            df.to_excel(writer, index=False, sheet_name=key)
+            df.to_excel(writer, index=True, sheet_name=key)
         temp_files[key] = temp_file.name
 
     unique_id = str(uuid.uuid4())
