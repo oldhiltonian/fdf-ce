@@ -23,7 +23,10 @@
         <div id="suggestions-box"></div>
     </div>
 
-    <div id="links-container"></div>
+    <div id="links-container" style="display: none;">
+        <h2>Download Financial Statements:</h2>
+        <ul id="download-links"></ul>
+    </div>
 
     <script src="{{ url_for('static', filename='js/search.js') }}"></script>
 
@@ -35,6 +38,7 @@
             var suggestionsBox = document.getElementById('suggestions-box');
             var form = document.getElementById('company-form');
             var linksContainer = document.getElementById('links-container');
+            var downloadLinks = document.getElementById('download-links');
 
             searchInput.addEventListener('input', function () {
                 var inputVal = searchInput.value.toLowerCase();
@@ -72,11 +76,13 @@
                 })
                     .then(response => response.json())
                     .then(data => {
-                        linksContainer.innerHTML = '<h2>Download Financial Statements:</h2><ul>' +
-                            Object.keys(data.links).map(key =>
-                                `<li><a href="${data.links[key]}" download>${key}</a></li>`
-                            ).join('') +
-                            '</ul>';
+                        linksContainer.style.display = 'block';
+                        downloadLinks.innerHTML = '';
+                        for (var key in data.links) {
+                            var link = document.createElement('li');
+                            link.innerHTML = `<a href="${data.links[key]}" download>${key}</a>`;
+                            downloadLinks.appendChild(link);
+                        }
                     })
                     .catch(error => console.error('Error:', error));
             });
